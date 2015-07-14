@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>AccountVIP - Add account</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+<div class="message"></div>
+<form id="formAddAccount">
+    <div>
+        <label>Site</label>
+        <select required="" name="site">
+            {% for s in sites %}
+            <option>{{ s }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label>Username/email</label>
+        <input name="identity" required="">
+    </div>
+    <div>
+        <label>Password</label>
+        <input name="password" type="password" required="">
+    </div>
+    <input type="submit" value="Ok">
+</form>
+<script>
+$(function(){
+    $('#formAddAccount').submit(function(e){
+        var $this = $(this);
+        var jsonData = {};
+        var formData = $this.serializeArray();
+        $.each(formData, function() {
+            if (jsonData[this.name]) {
+                if (!jsonData[this.name].push) {
+                    jsonData[this.name] = [jsonData[this.name]];
+                }
+                jsonData[this.name].push(this.value || '');
+            } else {
+                jsonData[this.name] = this.value || '';
+            }
+        });
+        e.preventDefault();
+        $.ajax({
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(jsonData)
+        }).success(function(data){
+            var msg = data.ok ?'Your account added.' : 'Your account is invalid.';
+            $('.message').text('Thank you! ' + msg);
+        }).error(function(){
+            $('.message').text('Something went wrong!')
+        });
+    });
+})
+</script>
+</body>
+</html>
